@@ -1,20 +1,26 @@
 import streamlit as st
 import google.generativeai as genai
 import os
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
 
-# Set your actual API key here
+# Retrieve the API key from the environment variable or use ADC
 api_key = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
 os.environ['GOOGLE_API_KEY'] = api_key
-
-# Retrieve the API key from the environment variable
 api_key = os.getenv('GOOGLE_API_KEY')
 
 if not api_key:
-    st.error("No API key found. Please set the GOOGLE_API_KEY environment variable.")
-    st.stop()
+    st.write("Using Application Default Credentials.")
+else:
+    st.write(f"API Key Loaded: {api_key}")
 
-# Initialize the GenerativeModel with the API key
-genai.api_key = api_key
+# Initialize the GenerativeModel with the API key or ADC
+if api_key:
+    genai.api_key = api_key
+else:
+    # Use default credentials
+    credentials, project = google.auth.default()
+    genai.credentials = credentials
 
 # Initialize the context
 context = []
@@ -60,9 +66,11 @@ def get_response(user_input):
 
         # Extract response text
         assistant_message = response['choices'][0]['message']['content']
+        st.write("Response from model:", response)
         
     except Exception as e:
         assistant_message = f"Sorry, I couldn't process your request. Error: {e}"
+        st.error(f"Error: {e}")
 
     # Append user and assistant messages to context
     context.append({'role': 'user', 'content': user_input})
