@@ -6,10 +6,6 @@ import os
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
 
 # Retrieve the API key from the environment variable
-import panel as pn
-from panel.io import serve
-pn.extension()
-# Retrieve the API key from the environment variable
 api_key = os.getenv('GOOGLE_API_KEY')
 
 if not api_key:
