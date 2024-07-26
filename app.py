@@ -1,26 +1,22 @@
 import streamlit as st
 import google.generativeai as genai
 import os
-from google.auth.transport.requests import Request
-from google.oauth2 import id_token
 
-# Retrieve the API key from the environment variable or use ADC
+# Set your actual API key here
 api_key = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
 os.environ['GOOGLE_API_KEY'] = api_key
+
+# Retrieve the API key from the environment variable
 api_key = os.getenv('GOOGLE_API_KEY')
 
 if not api_key:
-    st.write("Using Application Default Credentials.")
+    st.error("No API key found. Please set the GOOGLE_API_KEY environment variable.")
+    st.stop()
 else:
     st.write(f"API Key Loaded: {api_key}")
 
-# Initialize the GenerativeModel with the API key or ADC
-if api_key:
-    genai.api_key = api_key
-else:
-    # Use default credentials
-    credentials, project = google.auth.default()
-    genai.credentials = credentials
+# Initialize the GenerativeModel with the API key
+genai.api_key = api_key
 
 # Initialize the context
 context = []
