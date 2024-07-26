@@ -3,13 +3,18 @@ import google.generativeai as genai
 import os
 
 # Set your actual API key here
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
+api_key = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
+os.environ['GOOGLE_API_KEY'] = api_key
 
 # Retrieve the API key from the environment variable
 api_key = os.getenv('GOOGLE_API_KEY')
 
 if not api_key:
-    raise ValueError("No API key found. Please set the GOOGLE_API_KEY environment variable.")
+    st.error("No API key found. Please set the GOOGLE_API_KEY environment variable.")
+    st.stop()
+
+# Initialize the GenerativeModel with the API key
+genai.api_key = api_key
 
 # Initialize the context
 context = []
@@ -48,15 +53,16 @@ def prompt(user_input):
 
 # Function to get a response from the model
 def get_response(user_input):
-    text = prompt(user_input)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(text)
-
-    # Extract response text
     try:
-        assistant_message = response.candidates[0].content.parts[0].text
-    except (AttributeError, IndexError, KeyError) as e:
-        assistant_message = "Sorry, I couldn't process your request."
+        text = prompt(user_input)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(text)
+
+        # Extract response text
+        assistant_message = response['choices'][0]['message']['content']
+        
+    except Exception as e:
+        assistant_message = f"Sorry, I couldn't process your request. Error: {e}"
 
     # Append user and assistant messages to context
     context.append({'role': 'user', 'content': user_input})
@@ -81,6 +87,3 @@ if st.button("Send"):
 # Display conversation history
 conversation_history = "\n\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in context])
 st.markdown(conversation_history)
-
-# Note: Ensure you have the necessary packages installed, for example:
-# pip install streamlit google-generativeai
