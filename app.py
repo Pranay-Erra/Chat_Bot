@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
 import streamlit as st
 import google.generativeai as genai
 import os
@@ -12,11 +6,14 @@ import os
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyDvcSjpnS1w486Y9B6qoa-x13nOmRMn_kk'
 
 # Retrieve the API key from the environment variable
+import panel as pn
+from panel.io import serve
+pn.extension()
+# Retrieve the API key from the environment variable
 api_key = os.getenv('GOOGLE_API_KEY')
 
 if not api_key:
-    st.error("No API key found. Please set the GOOGLE_API_KEY environment variable.")
-    st.stop()
+    raise ValueError("No API key found. Please set the GOOGLE_API_KEY environment variable.")
 
 # Initialize the context
 context = []
@@ -86,13 +83,8 @@ if st.button("Send"):
         st.write("Please enter a message.")
 
 # Display conversation history
-conversation_history = "\n\n".join([f"**{msg['role'].capitalize()}**: {msg['content']}" for msg in context])
+conversation_history = "\n\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in context])
 st.markdown(conversation_history)
 
-
-
-
-
-
-
-
+# Note: Ensure you have the necessary packages installed, for example:
+# pip install streamlit google-generativeai
